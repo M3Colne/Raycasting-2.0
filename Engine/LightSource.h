@@ -3,6 +3,8 @@
 #include "Graphics.h"
 #include "Wall.h"
 
+#include <vector>
+
 class LightSource
 {
 private:
@@ -33,6 +35,8 @@ public:
 	LightSource(Vec2 sourcePos, float angleOfVision, float offSet);
 	void UpdateWithScreenEdges(Wall* w, int nW);
 	void UpdateWithoutScreenEdges(Wall* w, int nW);
+	void UpdateWithScreenEdges(std::vector<Wall> w);
+	void UpdateWithoutScreenEdges(std::vector<Wall> w);
 	void Rotate(float offSet);
 	void Draw(Graphics& gfx);
 	int GetnRays() const;

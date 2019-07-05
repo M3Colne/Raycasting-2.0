@@ -24,7 +24,9 @@
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd )
+	gfx( wnd ),
+	playerPos(Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2),
+	playerDetection(playerPos, 360.0f, 0.0f)
 {
 }
 
@@ -38,20 +40,85 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	//Walls
+	if (wnd.mouse.LeftIsPressed())
+	{
+		possibleNewWall.start = Vec2(float(wnd.mouse.GetPosX()), float(wnd.mouse.GetPosY()));
+		startInit = true;
+	}
+	else if (wnd.mouse.RightIsPressed() && startInit)
+	{
+		possibleNewWall.end = Vec2(float(wnd.mouse.GetPosX()), float(wnd.mouse.GetPosY()));
+		walls.push_back(possibleNewWall);
+		startInit = false;
+	}
+
+	playerDetection.UpdateWithScreenEdges(walls);
+
+	for (int i = 0; i < playerDetection.GetnRays(); i++)
+	{
+		if (Vec2(playerDetection.rays[i].end - playerDetection.rays[i].start).GetLength() <= playerRadius)
+		{
+			color = 255;
+			break;
+		}
+		else
+		{
+			color = 122;
+		}
+	}
+
+	//Player movement
+	if (wnd.kbd.KeyIsPressed('W'))
+	{
+		playerPos += {0.0f, -vel};
+		playerDetection.pos += {0.0f, -vel};
+	}
+	if (wnd.kbd.KeyIsPressed('S'))
+	{
+		playerPos += {0.0f, vel};
+		playerDetection.pos += {0.0f, vel};
+	}
+	if (wnd.kbd.KeyIsPressed('A'))
+	{
+		playerPos += {-vel, 0.0f};
+		playerDetection.pos += {-vel, 0.0f};
+	}
+	if (wnd.kbd.KeyIsPressed('D'))
+	{
+		playerPos += {vel, 0.0f};
+		playerDetection.pos += {vel, 0.0f};
+	}
 }
 
-void Game::DrawSquare(Vec2 pos, int l, int r, int g, int b)
+void Game::DrawPlayer(Vec2 pos, float radius, int r, int g, int b)
 {
-	for (int j = pos.y; j < pos.y + l; j++)
-	{
-		for (int i = pos.x; i < pos.x + l; i++)
-		{
-			gfx.PutPixel(i, j, r, g, b);
+	const float topLeftX = pos.x - radius;
+	const float topLeftY = pos.y - radius;
+	const float diameter = (radius * 2) + 1;
+
+	for (float y = topLeftY; y < topLeftY + diameter; ++y) {
+		for (float x = topLeftX; x < topLeftX + diameter; ++x) {
+			const float DistanceSquared = (pos.x - x) * (pos.x - x) + (pos.y - y) * (pos.y - y);
+
+			if (DistanceSquared + 0.5f <= radius * radius) {
+				gfx.PutPixel(int(x), int(y), r, g, b);
+			}
 		}
 	}
 }
 
 void Game::ComposeFrame()
 {
-	DrawSquare(Vec2(wnd.mouse.GetPosX() - playerWidth/2, wnd.mouse.GetPosY() - playerWidth / 2), playerWidth, 255, 255, 122);
+	//Wall drawing
+	for (int i = 0; i < walls.size(); i++)
+	{
+		walls[i].Draw(gfx, Colors::Magenta);
+	}
+
+	//Player detection rays drawing
+	//playerDetection.Draw(gfx);
+
+	//Player drawing
+	DrawPlayer(playerPos, playerRadius, 255, color, 122);
 }

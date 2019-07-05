@@ -23,6 +23,9 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Graphics.h"
+#include "LightSource.h"
+#include "Wall.h"
+#include <vector>
 
 class Game
 {
@@ -36,13 +39,21 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
-	void DrawSquare(Vec2 pos, int l, int r, int g, int b);
+	void DrawPlayer(Vec2 pos, float radius, int r, int g, int b);
 	/********************************/
 private:
 	MainWindow& wnd;
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
-	int playerWidth = 20;
+	Vec2 playerPos;
+	LightSource playerDetection;
+	std::vector<Wall> walls;
+	Wall possibleNewWall;
+	float vel = 2.5f;
+	float playerRadius = 10.0f;
+	bool startInit = false;
+	bool hasCollision = false;
+	char color = 255;
 	/********************************/
 };
