@@ -36,11 +36,13 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
+	void DrawSquare(Vec2 pos, int l, int r, int g, int b);
 	/********************************/
 private:
 	MainWindow& wnd;
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
+	int playerWidth = 20;
 	/********************************/
 };

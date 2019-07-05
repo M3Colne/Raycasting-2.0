@@ -40,6 +40,18 @@ void Game::UpdateModel()
 {
 }
 
+void Game::DrawSquare(Vec2 pos, int l, int r, int g, int b)
+{
+	for (int j = pos.y; j < pos.y + l; j++)
+	{
+		for (int i = pos.x; i < pos.x + l; i++)
+		{
+			gfx.PutPixel(i, j, r, g, b);
+		}
+	}
+}
+
 void Game::ComposeFrame()
 {
+	DrawSquare(Vec2(wnd.mouse.GetPosX() - playerWidth/2, wnd.mouse.GetPosY() - playerWidth / 2), playerWidth, 255, 255, 122);
 }
