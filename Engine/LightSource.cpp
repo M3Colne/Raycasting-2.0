@@ -63,9 +63,58 @@ Vec2 LightSource::LightRay::IntersectionPoint(Wall wall)
 	return Vec2(x1 + t * (x2 - x1), y1 + t * (y2 - y1));
 }
 
-LightSource::LightSource(Vec2 sourcePos, float angleOfVision, float offSet)
+void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVector, std::vector<Wall> w, unsigned int R)
+{
+	while(R != 0)
+	{
+		LightRay ref;
+		//Finding the reflection angle
+		const float angleForTheReflection = 0.0f;
+
+		ref.Inhib(this->start, angleForTheReflection);
+
+		bool rHasIntersected = false;
+
+		//Im using those to find the closest end
+		Vec2 recordEnd = ref.end;
+		//The biggest possible line in the screen
+		float recordLenSquared = Graphics::ScreenWidth * Graphics::ScreenWidth + Graphics::ScreenHeight * Graphics::ScreenHeight;
+
+		for (unsigned int wallIndex = 0; wallIndex < w.size(); wallIndex++)
+		{
+			//Checking for intersections with the wall
+			if (ref.isIntersecting(w[wallIndex]))
+			{
+				ref.hasIntersected = true;
+				Vec2 possibleNewRecord = ref.IntersectionPoint(w[wallIndex]);
+				float len = Vec2(possibleNewRecord - ref.start).GetLengthSq();
+				if (len < recordLenSquared)
+				{
+					recordLenSquared = len;
+					recordEnd = possibleNewRecord;
+				}
+			}
+		}
+
+		if (ref.hasIntersected)
+		{
+			ref.end = recordEnd;
+			reflectionsVector.push_back(ref);
+			R--;
+			ref.GetReflections(reflectionsVector, w, R);
+		}
+		else
+		{
+			ref.end = ref.start;
+			reflectionsVector.push_back(ref);
+		}
+	}
+}
+
+LightSource::LightSource(Vec2 sourcePos, float angleOfVision, float offSet, unsigned int r)
 {
 	pos = sourcePos;
+	nReflections = r;
 
 	//Transforming it in radians
 	angleOfVision *= 3.1415926f / 180.0f;
@@ -76,171 +125,6 @@ LightSource::LightSource(Vec2 sourcePos, float angleOfVision, float offSet)
 	{
 		rays[i].Inhib(pos, angleForRay);
 		angleForRay += (angleOfVision / nRays);
-	}
-}
-
-void LightSource::UpdateWithScreenEdges(Wall* w, int nW)
-{
-	if (nW == 0)
-	{
-		for (int i = 0; i < nRays; i++)
-		{
-			//Screen edge intersection
-			{
-				Wall top(Vec2(0.0f, 0.0f), Vec2(Graphics::ScreenWidth - 1, 0.0f));
-				Wall bottom(Vec2(0.0f, Graphics::ScreenHeight - 1), Vec2(Graphics::ScreenWidth - 1, Graphics::ScreenHeight - 1));
-				Wall left(Vec2(0.0f, 0.0f), Vec2(0.0f, Graphics::ScreenHeight - 1));
-				Wall right(Vec2(Graphics::ScreenWidth - 1, 0.0f), Vec2(Graphics::ScreenWidth - 1, Graphics::ScreenHeight - 1));
-				if (rays[i].isIntersecting(top))
-				{
-					rays[i].end = rays[i].IntersectionPoint(top);
-				}
-				else if (rays[i].isIntersecting(bottom))
-				{
-					rays[i].end = rays[i].IntersectionPoint(bottom);
-				}
-				else if (rays[i].isIntersecting(left))
-				{
-					rays[i].end = rays[i].IntersectionPoint(left);
-				}
-				else if (rays[i].isIntersecting(right))
-				{
-					rays[i].end = rays[i].IntersectionPoint(right);
-				}
-			}
-		}
-	}
-	else
-	{
-		for (int i = 0; i < nRays; i++)
-		{
-			rays[i].hasIntersected = false;
-			rays[i].start = pos; //This is if the source is moving
-			rays[i].end = pos + Vec2(float(cos(rays[i].angle)), float(sin(rays[i].angle)));
-
-			//Im using those to find the closest end
-			Vec2 recordEnd = rays[i].end;
-			//The biggest possible line in the screen
-			float recordLenSquared = Graphics::ScreenWidth * Graphics::ScreenWidth + Graphics::ScreenHeight * Graphics::ScreenHeight;
-
-			for (int wallIndex = 0; wallIndex < nW; wallIndex++)
-			{
-				//Screen edge intersection
-				{
-					Wall top(Vec2(0.0f, 0.0f), Vec2(Graphics::ScreenWidth - 1, 0.0f));
-					Wall bottom(Vec2(0.0f, Graphics::ScreenHeight - 1), Vec2(Graphics::ScreenWidth - 1, Graphics::ScreenHeight - 1));
-					Wall left(Vec2(0.0f, 0.0f), Vec2(0.0f, Graphics::ScreenHeight - 1));
-					Wall right(Vec2(Graphics::ScreenWidth - 1, 0.0f), Vec2(Graphics::ScreenWidth - 1, Graphics::ScreenHeight - 1));
-					if (rays[i].isIntersecting(top))
-					{
-						rays[i].hasIntersected = true;
-						Vec2 possibleNewRecord = rays[i].IntersectionPoint(top);
-						float len = Vec2(possibleNewRecord - rays[i].start).GetLengthSq();
-						if (len < recordLenSquared)
-						{
-							recordLenSquared = len;
-							recordEnd = possibleNewRecord;
-						}
-					}
-					else if (rays[i].isIntersecting(bottom))
-					{
-						rays[i].hasIntersected = true;
-						Vec2 possibleNewRecord = rays[i].IntersectionPoint(bottom);
-						float len = Vec2(possibleNewRecord - rays[i].start).GetLengthSq();
-						if (len < recordLenSquared)
-						{
-							recordLenSquared = len;
-							recordEnd = possibleNewRecord;
-						}
-					}
-					else if (rays[i].isIntersecting(left))
-					{
-						rays[i].hasIntersected = true;
-						Vec2 possibleNewRecord = rays[i].IntersectionPoint(left);
-						float len = Vec2(possibleNewRecord - rays[i].start).GetLengthSq();
-						if (len < recordLenSquared)
-						{
-							recordLenSquared = len;
-							recordEnd = possibleNewRecord;
-						}
-					}
-					else if (rays[i].isIntersecting(right))
-					{
-						rays[i].hasIntersected = true;
-						Vec2 possibleNewRecord = rays[i].IntersectionPoint(right);
-						float len = Vec2(possibleNewRecord - rays[i].start).GetLengthSq();
-						if (len < recordLenSquared)
-						{
-							recordLenSquared = len;
-							recordEnd = possibleNewRecord;
-						}
-					}
-				}
-
-				//Checking for intersections with the wall
-				if (rays[i].isIntersecting(w[wallIndex]))
-				{
-					rays[i].hasIntersected = true;
-					Vec2 possibleNewRecord = rays[i].IntersectionPoint(w[wallIndex]);
-					float len = Vec2(possibleNewRecord - rays[i].start).GetLengthSq();
-					if (len < recordLenSquared)
-					{
-						recordLenSquared = len;
-						recordEnd = possibleNewRecord;
-					}
-				}
-			}
-
-			if (rays[i].hasIntersected)
-			{
-				rays[i].end = recordEnd;
-			}
-			else
-			{
-				rays[i].end = rays[i].start;
-			}
-		}
-	}
-}
-
-void LightSource::UpdateWithoutScreenEdges(Wall* w, int nW)
-{
-	assert(nW > 0);
-	for (int i = 0; i < nRays; i++)
-	{
-		rays[i].hasIntersected = false;
-		rays[i].start = pos; //This is if the source is moving
-		rays[i].end = pos + Vec2(float(cos(rays[i].angle)), float(sin(rays[i].angle)));
-
-		//Im using those to find the closest end
-		Vec2 recordEnd = rays[i].end;
-		//The biggest possible line in the screen
-		float recordLenSquared = Graphics::ScreenWidth * Graphics::ScreenWidth + Graphics::ScreenHeight * Graphics::ScreenHeight;
-
-		for (int wallIndex = 0; wallIndex < nW; wallIndex++)
-		{
-			//Checking for intersections with the wall
-			if (rays[i].isIntersecting(w[wallIndex]))
-			{
-				rays[i].hasIntersected = true;
-				Vec2 possibleNewRecord = rays[i].IntersectionPoint(w[wallIndex]);
-				float len = Vec2(possibleNewRecord - rays[i].start).GetLengthSq();
-				if (len < recordLenSquared)
-				{
-					recordLenSquared = len;
-					recordEnd = possibleNewRecord;
-				}
-			}
-		}
-
-		if (rays[i].hasIntersected)
-		{
-			rays[i].end = recordEnd;
-		}
-		else
-		{
-			rays[i].end = rays[i].start;
-		}
 	}
 }
 
@@ -288,7 +172,7 @@ void LightSource::UpdateWithScreenEdges(std::vector<Wall> w)
 			//The biggest possible line in the screen
 			float recordLenSquared = Graphics::ScreenWidth * Graphics::ScreenWidth + Graphics::ScreenHeight * Graphics::ScreenHeight;
 
-			for (int wallIndex = 0; wallIndex < w.size(); wallIndex++)
+			for (unsigned int wallIndex = 0; wallIndex < w.size(); wallIndex++)
 			{
 				//Screen edge intersection
 				{
@@ -370,6 +254,9 @@ void LightSource::UpdateWithScreenEdges(std::vector<Wall> w)
 
 void LightSource::UpdateWithoutScreenEdges(std::vector<Wall> w)
 {
+	//Clear the reflections
+	reflectedRays.clear();
+
 	for (int i = 0; i < nRays; i++)
 	{
 		rays[i].hasIntersected = false;
@@ -381,7 +268,7 @@ void LightSource::UpdateWithoutScreenEdges(std::vector<Wall> w)
 		//The biggest possible line in the screen
 		float recordLenSquared = Graphics::ScreenWidth * Graphics::ScreenWidth + Graphics::ScreenHeight * Graphics::ScreenHeight;
 
-		for (int wallIndex = 0; wallIndex < w.size(); wallIndex++)
+		for (unsigned int wallIndex = 0; wallIndex < w.size(); wallIndex++)
 		{
 			//Checking for intersections with the wall
 			if (rays[i].isIntersecting(w[wallIndex]))
@@ -400,6 +287,7 @@ void LightSource::UpdateWithoutScreenEdges(std::vector<Wall> w)
 		if (rays[i].hasIntersected)
 		{
 			rays[i].end = recordEnd;
+			rays[i].GetReflections(reflectedRays, w, nReflections);
 		}
 		else
 		{
@@ -430,6 +318,7 @@ void LightSource::Draw(Graphics& gfx)
 	for (int i = 0; i < nRays; i++)
 	{
 		rays[i].Draw(gfx);
+		reflectedRays[i].Draw(gfx);
 	}
 }
 

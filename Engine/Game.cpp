@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	wnd( wnd ),
 	gfx( wnd ),
 	playerPos(Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2),
-	playerDetection(playerPos, 360.0f, 0.0f)
+	playerDetection(playerPos, 360.0f, 0.0f, 0)
 {
 }
 
@@ -53,7 +53,7 @@ void Game::UpdateModel()
 		startInit = false;
 	}
 
-	playerDetection.UpdateWithScreenEdges(walls);
+	playerDetection.UpdateWithoutScreenEdges(walls);
 
 	for (int i = 0; i < playerDetection.GetnRays(); i++)
 	{
@@ -111,13 +111,13 @@ void Game::DrawPlayer(Vec2 pos, float radius, int r, int g, int b)
 void Game::ComposeFrame()
 {
 	//Wall drawing
-	for (int i = 0; i < walls.size(); i++)
+	for (unsigned int i = 0; i < walls.size(); i++)
 	{
 		walls[i].Draw(gfx, Colors::Magenta);
 	}
 
 	//Player detection rays drawing
-	//playerDetection.Draw(gfx);
+	playerDetection.Draw(gfx);
 
 	//Player drawing
 	DrawPlayer(playerPos, playerRadius, 255, color, 122);

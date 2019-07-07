@@ -2,7 +2,6 @@
 
 #include "Graphics.h"
 #include "Wall.h"
-
 #include <vector>
 
 class LightSource
@@ -19,8 +18,11 @@ private:
 		void Draw(Graphics& gfx);
 		bool isIntersecting(Wall wall);
 		Vec2 IntersectionPoint(Wall wall);
+		void GetReflections(std::vector<LightRay>& reflectionsVector, std::vector<Wall> w, unsigned int R);
 	};
 	static constexpr int nRays = 100;
+	unsigned int nReflections;
+	std::vector<LightRay> reflectedRays;
 	//Data
 public:
 	//Data
@@ -32,9 +34,7 @@ private:
 	//Functions
 public:
 	//Functions
-	LightSource(Vec2 sourcePos, float angleOfVision, float offSet);
-	void UpdateWithScreenEdges(Wall* w, int nW);
-	void UpdateWithoutScreenEdges(Wall* w, int nW);
+	LightSource(Vec2 sourcePos, float angleOfVision, float offSet, unsigned int r);
 	void UpdateWithScreenEdges(std::vector<Wall> w);
 	void UpdateWithoutScreenEdges(std::vector<Wall> w);
 	void Rotate(float offSet);
