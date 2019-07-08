@@ -20,7 +20,7 @@ private:
 		Vec2 IntersectionPoint(Wall wall);
 		void GetReflections(std::vector<LightRay>& reflectionsVector, std::vector<Wall> w, unsigned int R);
 	};
-	static constexpr int nRays = 100;
+	static constexpr int nRays = 1;
 	unsigned int nReflections;
 	std::vector<LightRay> reflectedRays;
 	//Data

@@ -68,10 +68,13 @@ void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVec
 	while(R != 0)
 	{
 		LightRay ref;
-		//Finding the reflection angle
-		const float angleForTheReflection = 0.0f;
-
-		ref.Inhib(this->start, angleForTheReflection);
+		//Initializing ref
+		{
+			const float angleForTheReflection = 5* 3.1415026f/4;
+			//I'm using this dir vector just so that the ref doesn't start in the wall which can create some problems with intersections
+			Vec2 dir = (this->end - this->start).Normalize();
+			ref.Inhib(this->end - dir, angleForTheReflection);
+		}
 
 		bool rHasIntersected = false;
 
@@ -107,6 +110,7 @@ void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVec
 		{
 			ref.end = ref.start;
 			reflectionsVector.push_back(ref);
+			R = 0;
 		}
 	}
 }
@@ -318,6 +322,9 @@ void LightSource::Draw(Graphics& gfx)
 	for (int i = 0; i < nRays; i++)
 	{
 		rays[i].Draw(gfx);
+	}
+	for (int i = 0; i < reflectedRays.size(); i++)
+	{
 		reflectedRays[i].Draw(gfx);
 	}
 }

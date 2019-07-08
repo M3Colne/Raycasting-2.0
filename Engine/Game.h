@@ -54,6 +54,6 @@ private:
 	float playerRadius = 10.0f;
 	bool startInit = false;
 	bool hasCollision = false;
-	char color = 255;
+	char color = 122;
 	/********************************/
 };

@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	wnd( wnd ),
 	gfx( wnd ),
 	playerPos(Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2),
-	playerDetection(playerPos, 360.0f, 0.0f, 0)
+	playerDetection(playerPos, 15.0f, 0.0f, 1)
 {
 }
 
@@ -55,6 +55,7 @@ void Game::UpdateModel()
 
 	playerDetection.UpdateWithoutScreenEdges(walls);
 
+	//Checking collisions
 	for (int i = 0; i < playerDetection.GetnRays(); i++)
 	{
 		if (Vec2(playerDetection.rays[i].end - playerDetection.rays[i].start).GetLength() <= playerRadius)
