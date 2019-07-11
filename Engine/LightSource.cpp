@@ -65,15 +65,26 @@ Vec2 LightSource::LightRay::IntersectionPoint(Wall wall)
 
 void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVector, std::vector<Wall> w, unsigned int R)
 {
+	Vec2 refStart = this->start;
+	Vec2 refEnd = this->end;
 	while(R != 0)
 	{
 		LightRay ref;
 		//Initializing ref
 		{
-			const float angleForTheReflection = 5* 3.1415026f/4;
+			Wall theWall = w[this->intersectingWallID];
+			Vec2 WallNormal(-(theWall.end.y - theWall.start.y), theWall.end.x - theWall.start.x);
+
 			//I'm using this dir vector just so that the ref doesn't start in the wall which can create some problems with intersections
-			Vec2 dir = (this->end - this->start).Normalize();
-			ref.Inhib(this->end - dir, angleForTheReflection);
+			Vec2 dir = (refEnd - refStart).Normalize();
+			if (R == 2)
+			{
+				ref.Inhib(refEnd - dir, 3.1415926f);
+			}
+			else
+			{
+				ref.Inhib(refEnd - dir, 3.1415926f/2);
+			}
 		}
 
 		bool rHasIntersected = false;
@@ -104,7 +115,8 @@ void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVec
 			ref.end = recordEnd;
 			reflectionsVector.push_back(ref);
 			R--;
-			ref.GetReflections(reflectionsVector, w, R);
+			refStart = ref.start;
+			refEnd = ref.end; //WTF???? is happening, everything where should be checked (everything I mean the GetReflectionFunction)
 		}
 		else
 		{
@@ -284,6 +296,7 @@ void LightSource::UpdateWithoutScreenEdges(std::vector<Wall> w)
 				{
 					recordLenSquared = len;
 					recordEnd = possibleNewRecord;
+					rays[i].intersectingWallID = wallIndex;
 				}
 			}
 		}

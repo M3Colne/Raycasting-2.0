@@ -13,6 +13,7 @@ private:
 		bool initialized = false;
 		bool hasIntersected = false;
 		float angle;
+		unsigned int intersectingWallID;
 
 		void Inhib(Vec2 _rayPos, float a);
 		void Draw(Graphics& gfx);
