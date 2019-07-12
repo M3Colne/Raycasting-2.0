@@ -65,8 +65,9 @@ Vec2 LightSource::LightRay::IntersectionPoint(Wall wall)
 
 void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVector, std::vector<Wall> w, unsigned int R)
 {
-	Vec2 refStart = this->start;
-	Vec2 refEnd = this->end;
+	Vec2 prevRefStart = this->start;
+	Vec2 prevRefEnd = this->end;
+
 	while(R != 0)
 	{
 		LightRay ref;
@@ -75,19 +76,14 @@ void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVec
 			Wall theWall = w[this->intersectingWallID];
 			Vec2 WallNormal(-(theWall.end.y - theWall.start.y), theWall.end.x - theWall.start.x);
 
-			//I'm using this dir vector just so that the ref doesn't start in the wall which can create some problems with intersections
-			Vec2 dir = (refEnd - refStart).Normalize();
-			if (R == 2)
-			{
-				ref.Inhib(refEnd - dir, 3.1415926f);
-			}
-			else
-			{
-				ref.Inhib(refEnd - dir, 3.1415926f/2);
-			}
-		}
+			//Big problem, I need to move the normal and the previousReflection to the 0,0 coordinate so that the formula works
 
-		bool rHasIntersected = false;
+			float refAngle;
+
+			//I'm using this dir vector just so that the ref doesn't start in the wall which can create some problems with the intersections
+			Vec2 dir = (prevRefEnd - prevRefStart).Normalize();
+			ref.Inhib(prevRefEnd - dir, 3.1415926f/2 * R);
+		}
 
 		//Im using those to find the closest end
 		Vec2 recordEnd = ref.end;
@@ -115,13 +111,11 @@ void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVec
 			ref.end = recordEnd;
 			reflectionsVector.push_back(ref);
 			R--;
-			refStart = ref.start;
-			refEnd = ref.end; //WTF???? is happening, everything where should be checked (everything I mean the GetReflectionFunction)
+			prevRefStart = ref.start;
+			prevRefEnd = ref.end;
 		}
 		else
 		{
-			ref.end = ref.start;
-			reflectionsVector.push_back(ref);
 			R = 0;
 		}
 	}
