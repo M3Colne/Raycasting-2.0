@@ -20,6 +20,8 @@ public:
 	Vec2 GetNormalized() const;
 	Vec2& NormalizeTo(float normalizer); //I made this function
 	Vec2 GetNormalizedTo(float normalizer) const; //I made this function
+	float GetAngle() const;
+	static float GetAngleBetween(const Vec2 a, const Vec2 b); //It will be between 0 and PI and never negative
 public:
 	float x;
 	float y;

@@ -94,3 +94,32 @@ Vec2 Vec2::GetNormalizedTo(float normalizer) const
 	}
 	return *this;
 }
+
+float Vec2::GetAngle() const
+{
+	float angle;
+	Vec2 dir = this->GetNormalized();
+	if (dir.y > 0)
+	{
+		angle = acos(dir.x);
+	}
+	else
+	{
+		angle = 6.2831853f - acos(dir.x);
+	}
+
+	return angle;
+}
+
+float Vec2::GetAngleBetween(const Vec2 a, const Vec2 b)
+{
+	//acos((this->x * b.x + this->y * b.y) / (this->GetLength() * b.GetLength())) * 180.0f / 3.1415926f;
+	//Dot product
+	float dp = a.x * b.x + a.y * b.y;
+	float u = a.GetLength();
+	float v = b.GetLength();
+
+	float beta = dp / (u * v);
+
+	return acos(beta);
+}
