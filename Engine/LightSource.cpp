@@ -63,7 +63,7 @@ Vec2 LightSource::LightRay::IntersectionPoint(Wall wall)
 	return Vec2(x1 + t * (x2 - x1), y1 + t * (y2 - y1));
 }
 
-void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVector, std::vector<Wall> w, unsigned int R, Graphics& gfx)
+void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVector, std::vector<Wall> w, unsigned int R)
 {
 	Vec2 prevRefStart = this->start;
 	Vec2 prevRefEnd = this->end;
@@ -77,44 +77,27 @@ void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVec
 			Wall Normal((theWall.end + theWall.start)/2, 
 						((theWall.end + theWall.start) / 2) + Vec2(-(theWall.end.y - theWall.start.y), theWall.end.x - theWall.start.x));
 
-			Normal.Draw(gfx, Colors::Red);
-
 			//a and b are vectors at the 0,0 origin now
 			Vec2 a = Normal.end - Normal.start;
-			gfx.DrawLine(Vec2(Graphics::ScreenWidth/2, Graphics::ScreenHeight/2),
-						Vec2(Graphics::ScreenWidth/2, Graphics::ScreenHeight/2) + a, Colors::Green);
 			Vec2 b = prevRefStart - prevRefEnd; //Draw it in MS Paint, you will understand why
-			gfx.DrawLine(Vec2(Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2),
-						Vec2(Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2) + b, Colors::Yellow);
 
-			float alpha = Vec2::GetAngleBetween(a,b);
 			float refAngle = 0.0f;
+			float alpha = Vec2::GetAngleBetween(a,b);
 
-			//Special case (this may happen when the normal line is on the opposite side of the wall
-
-
-
-
-			if (alpha >= 3.1415926f / 2.0f)              //This is last problem before I can finish this
+			//Special case when the normal is on the opposite side
+			if (alpha > 3.1415926f / 2.0f)
 			{
-				alpha -= 3.1415926f / 2.0f;
-				refAngle = a.GetAngle() + alpha;
+				a *= -1;
+				alpha = Vec2::GetAngleBetween(a, b);
 			}
 
-
-
-
-
-			else if (alpha < 3.1415926f)
+			if (a.GetAngle() > b.GetAngle())
 			{
-				if (a.GetAngle() > b.GetAngle())
-				{
-					refAngle = a.GetAngle() + alpha;
-				}
-				else
-				{
-					refAngle = a.GetAngle() - alpha;
-				}
+				refAngle = a.GetAngle() + alpha;
+			}
+			else
+			{
+				refAngle = a.GetAngle() - alpha;
 			}
 
 			//I'm using this dir vector just so that the ref doesn't start in the wall which can create some problems with the intersections
@@ -299,7 +282,7 @@ void LightSource::UpdateWithScreenEdges(std::vector<Wall> w)
 	}
 }
 
-void LightSource::UpdateWithoutScreenEdges(std::vector<Wall> w, Graphics& gfx)
+void LightSource::UpdateWithoutScreenEdges(std::vector<Wall> w)
 {
 	//Clear the reflections
 	reflectedRays.clear();
@@ -335,7 +318,7 @@ void LightSource::UpdateWithoutScreenEdges(std::vector<Wall> w, Graphics& gfx)
 		if (rays[i].hasIntersected)
 		{
 			rays[i].end = recordEnd;
-			rays[i].GetReflections(reflectedRays, w, nReflections, gfx);
+			rays[i].GetReflections(reflectedRays, w, nReflections);
 		}
 		else
 		{
