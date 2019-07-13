@@ -50,7 +50,9 @@ private:
 	LightSource playerDetection;
 	std::vector<Wall> walls;
 	Wall possibleNewWall;
+	float offSet = 0.0f;
 	float vel = 2.5f;
+	float visionVel = 0.75f;
 	float playerRadius = 10.0f;
 	bool startInit = false;
 	bool hasCollision = false;

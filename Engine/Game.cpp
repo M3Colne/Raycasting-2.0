@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	wnd( wnd ),
 	gfx( wnd ),
 	playerPos(Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2),
-	playerDetection(playerPos, 15.0f, 0.0f, 4)
+	playerDetection(playerPos, 15.0f, offSet, 1)
 {
 }
 
@@ -53,7 +53,7 @@ void Game::UpdateModel()
 		startInit = false;
 	}
 
-	playerDetection.UpdateWithoutScreenEdges(walls);
+	playerDetection.UpdateWithoutScreenEdges(walls, gfx);
 
 	//Checking collisions
 	for (int i = 0; i < playerDetection.GetnRays(); i++)
@@ -89,6 +89,17 @@ void Game::UpdateModel()
 	{
 		playerPos += {vel, 0.0f};
 		playerDetection.pos += {vel, 0.0f};
+	}
+	//Player vision
+	if (wnd.kbd.KeyIsPressed('C'))
+	{
+		offSet -= visionVel;
+		playerDetection.Rotate(offSet);
+	}
+	if (wnd.kbd.KeyIsPressed('V'))
+	{
+		offSet += visionVel;
+		playerDetection.Rotate(offSet);
 	}
 }
 
