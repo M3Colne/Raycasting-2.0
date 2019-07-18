@@ -46,8 +46,8 @@ private:
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
-	Vec2 playerPos;
-	LightSource playerDetection;
+	Vec2 cameraPos;
+	LightSource camera;
 	std::vector<Wall> walls;
 	Wall possibleNewWall;
 	float offSet = 0.0f;
@@ -55,7 +55,5 @@ private:
 	float visionVel = 0.75f;
 	float playerRadius = 10.0f;
 	bool startInit = false;
-	bool hasCollision = false;
-	char color = 122;
 	/********************************/
 };

@@ -13,6 +13,17 @@ struct Wall
 		start = a;
 		end = b;
 	}
+	Wall operator+(const Vec2& os) const
+	{
+		return Wall(this->start + os, this->end + os);
+	}
+	Wall& operator+=(const Vec2& os)
+	{
+		this->start += os;
+		this->end += os;
+
+		return *this;
+	}
 	void Draw(Graphics& gfx, Color c)
 	{
 		gfx.DrawLine(start, end, c);

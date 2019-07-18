@@ -15,6 +15,7 @@ Vec2& Vec2::operator=(const Vec2& rhs)
 
 	return *this;
 }
+
 Vec2 Vec2::operator+(const Vec2& rhs) const
 {
 	return Vec2(x + rhs.x, y + rhs.y);

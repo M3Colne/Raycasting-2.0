@@ -25,8 +25,8 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	playerPos(Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2),
-	playerDetection(playerPos, 15.0f, offSet, 2)
+	cameraPos(Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2),
+	camera(cameraPos, 15.0f, offSet, 3)
 {
 }
 
@@ -53,53 +53,39 @@ void Game::UpdateModel()
 		startInit = false;
 	}
 
-	playerDetection.UpdateWithoutScreenEdges(walls);
-
-	//Checking collisions
-	for (int i = 0; i < playerDetection.GetnRays(); i++)
-	{
-		if (Vec2(playerDetection.rays[i].end - playerDetection.rays[i].start).GetLength() <= playerRadius)
-		{
-			color = 255;
-			break;
-		}
-		else
-		{
-			color = 122;
-		}
-	}
+	camera.UpdateWithoutScreenEdges(walls);
 
 	//Player movement
 	if (wnd.kbd.KeyIsPressed('W'))
 	{
-		playerPos += {0.0f, -vel};
-		playerDetection.pos += {0.0f, -vel};
+		cameraPos += {0.0f, -vel};
+		camera.pos += {0.0f, -vel};
 	}
 	if (wnd.kbd.KeyIsPressed('S'))
 	{
-		playerPos += {0.0f, vel};
-		playerDetection.pos += {0.0f, vel};
+		cameraPos += {0.0f, vel};
+		camera.pos += {0.0f, vel};
 	}
 	if (wnd.kbd.KeyIsPressed('A'))
 	{
-		playerPos += {-vel, 0.0f};
-		playerDetection.pos += {-vel, 0.0f};
+		cameraPos += {-vel, 0.0f};
+		camera.pos += {-vel, 0.0f};
 	}
 	if (wnd.kbd.KeyIsPressed('D'))
 	{
-		playerPos += {vel, 0.0f};
-		playerDetection.pos += {vel, 0.0f};
+		cameraPos += {vel, 0.0f};
+		camera.pos += {vel, 0.0f};
 	}
 	//Player vision
 	if (wnd.kbd.KeyIsPressed('C'))
 	{
 		offSet -= visionVel;
-		playerDetection.Rotate(offSet);
+		camera.Rotate(offSet);
 	}
 	if (wnd.kbd.KeyIsPressed('V'))
 	{
 		offSet += visionVel;
-		playerDetection.Rotate(offSet);
+		camera.Rotate(offSet);
 	}
 }
 
@@ -126,11 +112,14 @@ void Game::ComposeFrame()
 	for (unsigned int i = 0; i < walls.size(); i++)
 	{
 		walls[i].Draw(gfx, Colors::Magenta);
+
+		//Drawing normals
+
 	}
 
 	//Player detection rays drawing
-	playerDetection.Draw(gfx);
+	camera.Draw(gfx);
 
 	//Player drawing
-	DrawPlayer(playerPos, playerRadius, 255, color, 122);
+	DrawPlayer(cameraPos, playerRadius, 255, 122, 122);
 }
