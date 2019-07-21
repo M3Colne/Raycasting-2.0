@@ -122,6 +122,7 @@ void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVec
 				{
 					recordLenSquared = len;
 					recordEnd = possibleNewRecord;
+					intersectingWallID = wallIndex;
 				}
 			}
 		}
