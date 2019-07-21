@@ -113,8 +113,10 @@ void Game::ComposeFrame()
 	{
 		walls[i].Draw(gfx, Colors::Magenta);
 
-		//Drawing normals
-
+		//Drawing normal
+		gfx.DrawLine((walls[i].end + walls[i].start) / 2,
+			Vec2((walls[i].end + walls[i].start) / 2) 
+			+ Vec2(-(walls[i].end.y - walls[i].start.y), walls[i].end.x - walls[i].start.x).NormalizeTo(30.0f), Colors::Cyan);
 	}
 
 	//Player detection rays drawing
