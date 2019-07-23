@@ -36,8 +36,7 @@ private:
 public:
 	//Functions
 	LightSource(Vec2 sourcePos, float angleOfVision, float offSet, unsigned int r);
-	void UpdateWithScreenEdges(std::vector<Wall> w);
-	void UpdateWithoutScreenEdges(std::vector<Wall> w);
+	void Update(std::vector<Wall> w);
 	void Rotate(float offSet);
 	void Draw(Graphics& gfx);
 	int GetnRays() const;

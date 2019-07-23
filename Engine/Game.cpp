@@ -53,7 +53,7 @@ void Game::UpdateModel()
 		startInit = false;
 	}
 
-	camera.UpdateWithoutScreenEdges(walls);
+	camera.Update(walls);
 
 	//Player movement
 	if (wnd.kbd.KeyIsPressed('W'))
