@@ -98,14 +98,15 @@ Vec2 Vec2::GetNormalizedTo(float normalizer) const
 
 float Vec2::GetAngle(const float relativeToWhat) const
 {
-	Vec2 dir = this->GetNormalized();
-	if (dir.y > 0)
+	float o = acos(this->GetNormalized().x) - relativeToWhat;
+
+	if (o <= 3.1415926f)
 	{
-		return acos(dir.x) - relativeToWhat;
+		return o;
 	}
 	else
 	{
-		return 6.2831853f - acos(dir.x) - relativeToWhat;
+		return -(6.2831853f - o);
 	}
 }
 

@@ -81,24 +81,31 @@ void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVec
 			Vec2 a = Normal.end - Normal.start;
 			Vec2 b = prevRefStart - prevRefEnd; //Draw it in MS Paint, you will understand why
 
-			float refAngle = 0.0f;
-			float alpha = Vec2::GetAngleBetween(a,b);
+			if(b.GetAngle())
+			float alpha = b.GetAngle(0.0f) - a.GetAngle(0.0f);
 
-			//Special case when the normal is on the opposite side
-			if (alpha > 3.1415926f / 2.0f)
+			if (alpha > 3.1415926f / 2)
 			{
-				a *= -1;
-				alpha = Vec2::GetAngleBetween(a, b);
+				alpha -= 3.1415926f;
 			}
 
-			if (a.GetAngle() > b.GetAngle())
+			////Special case when the normal is on the opposite side
+			//if (alpha > 3.1415926f / 2.0f)
+			//{
+			//	a *= -1;
+			//	alpha = Vec2::GetAngleBetween(a, b);
+			//}
+
+			float refAngle = a.GetAngle(0.0f) - alpha;
+
+			/*if (a.GetAngle() > b.GetAngle())
 			{
 				refAngle = a.GetAngle() + alpha;
 			}
 			else
 			{
 				refAngle = a.GetAngle() - alpha;
-			}
+			}*/
 
 			//I'm using this dir vector just so that the ref doesn't start in the wall which can create some problems with the intersections
 			Vec2 dir = (prevRefEnd - prevRefStart).Normalize();

@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	wnd( wnd ),
 	gfx( wnd ),
 	cameraPos(Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2),
-	camera(cameraPos, 15.0f, offSet, 3)
+	camera(cameraPos, 15.0f, offSet, 1)
 {
 }
 
