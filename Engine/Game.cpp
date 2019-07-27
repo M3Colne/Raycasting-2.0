@@ -53,6 +53,19 @@ void Game::UpdateModel()
 		startInit = false;
 	}
 
+	Vec2 center(Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2);
+
+	float relAngle = -0.7853981f;
+
+	Vec2 a(wnd.mouse.GetPosX(), wnd.mouse.GetPosY());
+	Vec2 rel(float(cos(relAngle)), float(sin(relAngle)));
+	rel.NormalizeTo(100.0f);
+	gfx.DrawLine(center, center + rel, Colors::White);
+	gfx.DrawLine(center, a, Colors::Green);
+
+	Vec2 K = a - center;
+	float k = K.GetAngle(relAngle) * 180 / 3.1415926f;
+
 	camera.Update(walls);
 
 	//Player movement
