@@ -78,38 +78,18 @@ void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVec
 						((theWall.end + theWall.start) / 2) + Vec2(-(theWall.end.y - theWall.start.y), theWall.end.x - theWall.start.x));
 
 			//a and b are vectors at the 0,0 origin now
-			//Vec2 a = Normal.end - Normal.start;
-			//Vec2 b = prevRefStart - prevRefEnd; //Draw it in MS Paint, you will understand why
+			Vec2 a = Normal.end - Normal.start;
+			Vec2 b = prevRefStart - prevRefEnd; //Draw it in MS Paint, you will understand why
 
-			//if(b.GetAngle())
-			//float alpha = b.GetAngle(0.0f) - a.GetAngle(0.0f);
-
-			//if (alpha > 3.1415926f / 2)
-			//{
-			//	alpha -= 3.1415926f;
-			//}
-
-			////Special case when the normal is on the opposite side
-			//if (alpha > 3.1415926f / 2.0f)
-			//{
-			//	a *= -1;
-			//	alpha = Vec2::GetAngleBetween(a, b);
-			//}
-
-			/*float refAngle = a.GetAngle(0.0f) - alpha;*/
-
-			/*if (a.GetAngle() > b.GetAngle())
-			{
-				refAngle = a.GetAngle() + alpha;
-			}
-			else
-			{
-				refAngle = a.GetAngle() - alpha;
-			}*/
+			float refAngle = a.GetAngle() - b.GetAngle(a.GetAngle());
 
 			//I'm using this dir vector just so that the ref doesn't start in the wall which can create some problems with the intersections
 			Vec2 dir = (prevRefEnd - prevRefStart).Normalize();
-			ref.Inhib(prevRefEnd - dir, 0.0f);
+			ref.Inhib(prevRefEnd - dir, refAngle);
+			if (ref.angle >= 6.2831853f)
+			{
+				ref.angle -= 6.2831853f;
+			}
 		}
 
 		//Im using those to find the closest end
@@ -173,6 +153,10 @@ void LightSource::Update(std::vector<Wall> w)
 
 	for (int i = 0; i < nRays; i++)
 	{
+		if (rays[i].angle >= 6.2831853f)
+		{
+			rays[i].angle -= 6.2831853f;
+		}
 		rays[i].hasIntersected = false;
 		rays[i].start = pos; //This is if the source is moving
 		rays[i].end = pos + Vec2(float(cos(rays[i].angle)), float(sin(rays[i].angle)));

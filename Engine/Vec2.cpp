@@ -137,6 +137,16 @@ float Vec2::GetAngle(const float relativeToWhat) const
 	}
 }
 
+float Vec2::GetAngle() const
+{
+	if (this->y < 0)
+	{
+		return 6.2831853f - acos(this->GetNormalized().x);
+	}
+
+	return acos(this->GetNormalized().x);
+}
+
 float Vec2::GetAngleBetween(const Vec2 a, const Vec2 b)
 {
 	//It will be between 0 and PI and never negative
