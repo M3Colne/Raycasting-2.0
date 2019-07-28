@@ -1,6 +1,5 @@
 #include "Vec2.h"
 #include <cmath>
-#include <assert.h>
 
 Vec2::Vec2(float x_in, float y_in)
 	:
@@ -99,15 +98,33 @@ Vec2 Vec2::GetNormalizedTo(float normalizer) const
 
 float Vec2::GetAngle(const float relativeToWhat) const
 {
-	//The function doesn't work if relativeToWhat is negative or bigger than PI
-	float PI = 3.1415926f;
+	//RelativeToWhat must be between 0 and 2*PI
+	//The return value can be between -PI and +PI
+	const float PI = 3.1415926f;
 	Vec2 a = this->GetNormalized();
 	Vec2 r(float(cos(relativeToWhat)), float(sin(relativeToWhat)));
 
-	float absAngle = GetAngleBetween(a,Vec2(1.0f, 0.0f));
-	if (a.y < 0)
+	//Finding the angle relative to 0
+	float absAngle = 0.0f;
+	if (relativeToWhat <= PI)
 	{
-		absAngle = 2 * PI - absAngle;
+		absAngle = GetAngleBetween(a, Vec2(1.0f, 0.0f));
+		if (a.y < 0)
+		{
+			absAngle = 2 * PI - absAngle;
+		}
+	}
+	else
+	{
+		absAngle = GetAngleBetween(a, Vec2(1.0f, 0.0f));
+		if (a.y < 0)
+		{
+			absAngle = 2 * PI - absAngle;
+		}
+		else
+		{
+			absAngle += 2 * PI;
+		}
 	}
 
 	if (absAngle >= relativeToWhat && absAngle <= relativeToWhat + PI)
@@ -122,6 +139,7 @@ float Vec2::GetAngle(const float relativeToWhat) const
 
 float Vec2::GetAngleBetween(const Vec2 a, const Vec2 b)
 {
+	//It will be between 0 and PI and never negative
 	//acos((this->x * b.x + this->y * b.y) / (this->GetLength() * b.GetLength()));
 	//Dot product
 	float dp = a.x * b.x + a.y * b.y;

@@ -55,7 +55,7 @@ void Game::UpdateModel()
 
 	Vec2 center(Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2);
 
-	float relAngle = -0.7853981f;
+	float relAngle = 0.7853981f;
 
 	Vec2 a(wnd.mouse.GetPosX(), wnd.mouse.GetPosY());
 	Vec2 rel(float(cos(relAngle)), float(sin(relAngle)));
