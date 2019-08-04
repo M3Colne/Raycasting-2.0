@@ -17,7 +17,7 @@ void LightSource::LightRay::Draw(Graphics& gfx)
 	gfx.DrawLine(start, end, Colors::White);
 }
 
-bool LightSource::LightRay::isIntersecting(Wall wall)
+Vec2 LightSource::LightRay::isIntersecting(Wall wall)
 {
 	const float x1 = wall.start.x;
 	const float y1 = wall.start.y;
@@ -31,7 +31,7 @@ bool LightSource::LightRay::isIntersecting(Wall wall)
 
 	if (den == 0.0f) //It means the lines are paralel
 	{
-		return false;
+		return Vec2(0.0000123f, 0.0000123f);
 	}
 
 	const float t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
@@ -39,28 +39,12 @@ bool LightSource::LightRay::isIntersecting(Wall wall)
 
 	if (0.0f <= t && t <= 1.0f && u > 0.0f) //Why not u < 1.0f? because it will make the ray to have infinite lenght tbh
 	{
-		return true;
+		return Vec2(x1 + t * (x2 - x1), y1 + t * (y2 - y1));
 	}
 	else
 	{
-		return false;
+		return Vec2(0.0000123f, 0.0000123f);
 	}
-}
-
-Vec2 LightSource::LightRay::IntersectionPoint(Wall wall)
-{
-	float x1 = wall.start.x;
-	float y1 = wall.start.y;
-	float x2 = wall.end.x;
-	float y2 = wall.end.y;
-	float x3 = start.x;
-	float y3 = start.y;
-	float x4 = end.x;
-	float y4 = end.y;
-	float den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-	float t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
-
-	return Vec2(x1 + t * (x2 - x1), y1 + t * (y2 - y1));
 }
 
 void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVector, std::vector<Wall> w, unsigned int R)
@@ -100,10 +84,11 @@ void LightSource::LightRay::GetReflections(std::vector<LightRay>& reflectionsVec
 		for (unsigned int wallIndex = 0; wallIndex < w.size(); wallIndex++)
 		{
 			//Checking for intersections with the wall
-			if (ref.isIntersecting(w[wallIndex]))
+			Vec2 l(ref.isIntersecting(w[wallIndex]));
+			if (l != Vec2(0.0000123f, 0.0000123f))
 			{
 				ref.hasIntersected = true;
-				Vec2 possibleNewRecord = ref.IntersectionPoint(w[wallIndex]);
+				Vec2 possibleNewRecord = l;
 				float len = Vec2(possibleNewRecord - ref.start).GetLengthSq();
 				if (len < recordLenSquared)
 				{
@@ -169,10 +154,11 @@ void LightSource::Update(std::vector<Wall> w)
 		for (unsigned int wallIndex = 0; wallIndex < w.size(); wallIndex++)
 		{
 			//Checking for intersections with the wall
-			if (rays[i].isIntersecting(w[wallIndex]))
+			Vec2 l(rays[i].isIntersecting(w[wallIndex]));
+			if (l != Vec2(0.0000123f, 0.0000123f))
 			{
 				rays[i].hasIntersected = true;
-				Vec2 possibleNewRecord = rays[i].IntersectionPoint(w[wallIndex]);
+				Vec2 possibleNewRecord = l;
 				float len = Vec2(possibleNewRecord - rays[i].start).GetLengthSq();
 				if (len < recordLenSquared)
 				{

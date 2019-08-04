@@ -17,8 +17,7 @@ private:
 
 		void Inhib(Vec2 _rayPos, float a);
 		void Draw(Graphics& gfx);
-		bool isIntersecting(Wall wall);
-		Vec2 IntersectionPoint(Wall wall);
+		Vec2 isIntersecting(Wall wall);
 		void GetReflections(std::vector<LightRay>& reflectionsVector, std::vector<Wall> w, unsigned int R);
 	};
 	static constexpr int nRays = 1;
